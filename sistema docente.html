@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistemas Docente</title>
+    <style>
+        /* Estilos estilo Santillana (Limpios y Azules) */
+        :root { --main: #005596; --sec: #00a1e4; --bg: #f4f7f9; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; }
+        
+        .nav-top { background: var(--main); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--main); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 350px; }
+        
+        .grid-estudiante { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 40px; }
+        .card-clase { background: white; padding: 20px; border-radius: 12px; border-top: 5px solid var(--sec); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        .btn-portal { background: var(--sec); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="login" class="login-overlay">
+    <div class="login-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3449/3449614.png" width="80" alt="STEM Logo">
+        <h2>Bienvenido al Portal STEM</h2>
+        <p>Selecciona tu perfil para continuar</p>
+        <button class="btn-portal" onclick="entrar('docente')" style="margin-bottom:10px; width:100%;">Soy el Docente</button>
+        <button class="btn-portal" onclick="entrar('estudiante')" style="background:#444; width:100%;">Soy Estudiante</button>
+    </div>
+</div>
+
+<div id="vista-estudiante" class="hidden">
+    <div class="nav-top">
+        <h1>Portal del Estudiante 3º-9º</h1>
+        <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:5px;">Cerrar Sesión</button>
+    </div>
+    <div class="grid-estudiante" id="contenedor-clases">
+        </div>
+</div>
+
+<div id="vista-docente" class="hidden">
+    <div class="nav-top">
+        <h1>Panel de Control Docente (MAT-CIE-TEC)</h1>
+        <button class="btn-portal" onclick="location.reload()">Salir</button>
+    </div>
+    <div style="padding:20px;">
+        <p>Bienvenido Maestro. Tus cambios se sincronizan en la nube.</p>
+        </div>
+</div>
+
+<script>
+    function entrar(perfil) {
+        document.getElementById('login').classList.add('hidden');
+        if(perfil === 'docente') {
+            const pass = prompt("Ingresa tu clave de maestro:");
+            if(pass === "1234") { // Aquí pondrás tu clave real
+                document.getElementById('vista-docente').classList.remove('hidden');
+            } else {
+                alert("Clave incorrecta");
+                location.reload();
+            }
+        } else {
+            document.getElementById('vista-estudiante').classList.remove('hidden');
+            cargarClasesParaAlumnos();
+        }
+    }
+
+    function cargarClasesParaAlumnos() {
+        const container = document.getElementById('contenedor-clases');
+        // Esto simula traer los datos que TÚ subiste
+        const misArchivos = JSON.parse(localStorage.getItem('docente_total_2026'))?.docs || [];
+        
+        if(misArchivos.length === 0) {
+            container.innerHTML = "<h3>No hay clases publicadas aún.</h3>";
+            return;
+        }
+
+        misArchivos.forEach(clase => {
+            container.innerHTML += `
+                <div class="card-clase">
+                    <h3>${clase.m}</h3>
+                    <p><b>Grado:</b> ${clase.g}</p>
+                    <p><b>Tema:</b> ${clase.t}</p>
+                    <button class="btn-portal" onclick="alert('Descargando: ${clase.f}')">Descargar Material</button>
+                </div>
+            `;
+        });
+    }
+</script>
+</body>
+</html>
